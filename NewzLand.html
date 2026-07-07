@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>NewzLand · 纯净生存服 | 防外挂</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0c12;
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, 'Poppins', sans-serif;
+            min-height: 100vh;
+            padding: 2rem;
+            position: relative;
+            background-image: radial-gradient(circle at 20% 30%, rgba(20, 180, 150, 0.08) 1px, transparent 1px);
+            background-size: 32px 32px;
+        }
+
+        .quick-nav {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        .back-home {
+            background: #173a32;
+            border: none;
+            padding: 6px 18px;
+            border-radius: 40px;
+            color: #ccfff0;
+            font-family: monospace;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .back-home:hover {
+            background: #2b5f52;
+        }
+
+        .glass-panel {
+            max-width: 1280px;
+            width: 100%;
+            margin: 0 auto;
+            background: rgba(10, 18, 26, 0.8);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(0, 255, 196, 0.45);
+            border-radius: 48px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(0, 255, 200, 0.1), 0 0 20px rgba(0, 225, 200, 0.2);
+            padding: 2rem;
+        }
+
+        .nav-bar {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid rgba(0, 255, 200, 0.3);
+        }
+        .nav-link {
+            color: #d6f7ef;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .nav-link:hover {
+            color: #9effe2;
+        }
+
+        .hud-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-bottom: 2rem;
+        }
+        .server-tag {
+            background: #0c1f1a;
+            padding: 6px 16px;
+            border-radius: 60px;
+            font-family: monospace;
+            font-weight: 500;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            color: #c2ffe8;
+            border: 1px solid #2abf9a;
+        }
+        .status-led {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.75rem;
+            color: #d0fff0;
+            background: #0f2020;
+            padding: 4px 12px;
+            border-radius: 30px;
+        }
+        .green-dot {
+            width: 10px;
+            height: 10px;
+            background: #1effbc;
+            border-radius: 50%;
+            box-shadow: 0 0 6px #2effd0;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.5; transform: scale(0.8);}
+            100% { opacity: 1; transform: scale(1);}
+        }
+
+        .neo-title {
+            font-size: 3.2rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #FFFFFF 0%, #bfffef 45%, #5affd0 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.25rem;
+        }
+        .subhead {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #caeef0;
+            border-left: 3px solid #2cbb92;
+            padding-left: 14px;
+            margin-top: 4px;
+            margin-bottom: 1.8rem;
+        }
+
+        .section {
+            margin: 2.2rem 0 2rem;
+            scroll-margin-top: 30px;
+        }
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #e2fff8;
+            border-left: 4px solid #2fcfaa;
+            padding-left: 16px;
+            margin-bottom: 1.2rem;
+        }
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .info-card {
+            background: rgba(8, 20, 24, 0.7);
+            border-radius: 32px;
+            padding: 1.3rem;
+            border: 1px solid rgba(0, 255, 200, 0.3);
+            backdrop-filter: blur(4px);
+        }
+        .info-card h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #dcfff2;
+            margin-bottom: 0.75rem;
+        }
+        .info-card p, .info-card li, .info-card .text-muted {
+            color: #e4f5f0;
+            font-size: 0.92rem;
+            line-height: 1.45;
+            font-weight: 450;
+        }
+        .gameplay-list {
+            list-style: none;
+            margin-top: 8px;
+        }
+        .gameplay-list li {
+            margin-bottom: 6px;
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            color: #ebf8f4;
+        }
+        .gameplay-list li::before {
+            content: "▹";
+            color: #64ffdb;
+        }
+        .tag-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 12px 0;
+        }
+        .tag {
+            background: rgba(0, 210, 180, 0.3);
+            border-radius: 30px;
+            padding: 4px 14px;
+            font-size: 0.8rem;
+            color: #e5fff7;
+            border: 0.5px solid #50dbb5;
+        }
+
+        /* 管理团队板块（干净无表情出格） */
+        .management-team {
+            background: rgba(0, 20, 24, 0.8);
+            border-radius: 48px;
+            padding: 1rem 1.5rem;
+            margin: 0 0 20px 0;
+            border: 1px solid #2d7f68;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+        .manager-card {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 14px;
+            background: #0b2a2570;
+            padding: 8px 20px;
+            border-radius: 60px;
+        }
+        .manager-title {
+            font-weight: 600;
+            color: #f0fffb;
+        }
+        .manager-name {
+            font-weight: 800;
+            color: #c9ffee;
+            background: #13463c;
+            padding: 2px 12px;
+            border-radius: 40px;
+        }
+        .manage-btn {
+            background: #1d4c42;
+            border: none;
+            padding: 6px 18px;
+            border-radius: 60px;
+            color: #f2fffc;
+            font-weight: 500;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .manage-btn:active {
+            transform: scale(0.96);
+        }
+
+        .cyber-btn {
+            background: linear-gradient(95deg, #0d2e2a, #05201c);
+            border: 1px solid #2cccaa;
+            width: 100%;
+            padding: 0.9rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #f0fff9;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: 0.1s;
+            margin-top: 0.5rem;
+        }
+        .cyber-btn:active {
+            transform: scale(0.98);
+        }
+
+        .feedback-area {
+            margin-top: 12px;
+        }
+        .feedback-card {
+            background: #1f3e38c9;
+            border-radius: 28px;
+            padding: 12px 16px;
+            text-align: center;
+            font-size: 0.85rem;
+            border: 1px solid #57e6be;
+            word-break: break-word;
+            margin-bottom: 8px;
+            color: #f0fff8;
+            font-weight: 450;
+        }
+        .close-feedback-btn {
+            background: #3b6c5e;
+            border: none;
+            padding: 5px 16px;
+            border-radius: 60px;
+            color: #eefef7;
+            font-size: 0.7rem;
+            cursor: pointer;
+            width: auto;
+            display: inline-block;
+        }
+
+        .back-to-top {
+            display: inline-block;
+            margin-top: 20px;
+            background: #2f6154;
+            border: none;
+            padding: 8px 24px;
+            border-radius: 80px;
+            color: white;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: #98cfbd;
+            border-top: 1px solid #1b5443;
+            padding-top: 1.2rem;
+        }
+
+        @media (max-width: 720px) {
+            .glass-panel { padding: 1.3rem; }
+            .neo-title { font-size: 2rem; }
+            .management-team { flex-direction: column; align-items: stretch; }
+            .manager-card { justify-content: space-between; }
+        }
+    </style>
+</head>
+<body>
+<div class="glass-panel">
+    <div class="quick-nav">
+        <button class="back-home" id="backToTopBtn">🏠 返回顶部</button>
+    </div>
+
+    <div class="nav-bar">
+        <button class="nav-link" data-section="about">📖 关于服务器</button>
+        <button class="nav-link" data-section="join">🎮 加入游戏</button>
+        <button class="nav-link" data-section="community">📡 社区资源</button>
+    </div>
+
+    <div class="hud-bar">
+        <div class="server-tag">🛸 OblerAlpha · 节点 ALPHA-1.2.6</div>
+        <div class="status-led"><span class="green-dot"></span> 怀旧引擎 · 在线</div>
+    </div>
+    <div class="neo-title">NewzLand 服务器</div>
+    <div class="subhead">纯净生存服 · 回到纯净的生存</div>
+
+    <!-- 关于服务器区块 -->
+    <div id="about" class="section">
+        <div class="section-title">📖 关于服务器</div>
+        <div class="cards-grid">
+            <div class="info-card">
+                <h3>⚙️ 核心机制</h3>
+                <p>版本：<strong>Minecraft 正式版 26.2</strong><br>无传送指令，无圈地，还原早期生存。<br>世界永久存档，不轻易重置地形。</p>
+                <div class="tag-group">
+                    <span class="tag">AuthMe 插件</span>
+                    <span class="tag">防外挂</span>
+                    <span class="tag">自由探险</span>
+                </div>
+            </div>
+            <div class="info-card">
+                <h3>🌍 开放世界</h3>
+                <div class="tag-group"><span class="tag">探索</span><span class="tag">发现</span><span class="tag">建造</span><span class="tag">合作</span></div>
+                <p>自由建造据点、经营农场、参与公共工程，无过度限制。管理员仅维护基础秩序。</p>
+            </div>
+            <div class="info-card">
+                <h3>📜 规则简述</h3>
+                <ul class="gameplay-list">
+                    <li>禁止恶意破坏、高频红石、流动水泛滥。</li>
+                    <li>尊重他人建筑，不偷窃、不抢劫玩家战利品。</li>
+                    <li>允许玩家自由交易与城镇建设。</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 加入游戏区块 -->
+    <div id="join" class="section">
+        <div class="section-title">🎮 加入游戏</div>
+        <div class="cards-grid">
+            <div class="info-card">
+                <h3>🔑 获取准入</h3>
+                <p>服务器IP私有地址，需向管理员申请。点击下方获取联系通道。</p>
+                <button class="cyber-btn" id="requestIpBtn">🌐 获取服务器 IP 准入</button>
+                <div id="ipFeedbackArea" class="feedback-area"></div>
+            </div>
+            <div class="info-card">
+                <h3>🧪 客户端准备</h3>
+                <p>使用 Minecraft 正式版 26.2，离线或正版均可（白名单制）。建议 PCL2 / HMCL。</p>
+                <button class="cyber-btn" id="clientGuideBtn">📦 客户端指引</button>
+                <div id="clientGuideArea" class="feedback-area"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 社区资源区块 -->
+    <div id="community" class="section">
+        <div class="section-title">📡 社区资源</div>
+        <div class="info-card" style="margin-bottom: 1.5rem;">
+            <h3>👥 管理团队</h3>
+            <div class="management-team">
+                <div class="manager-card">
+                    <span class="manager-title">🎩 腐竹</span>
+                    <span class="manager-name">XYZC_ab</span>
+                    <button class="manage-btn" id="contactOblerBtn">📧 联系腐竹</button>
+                </div>
+                <div class="manager-card">
+                    <span class="manager-title">⚙️ 管理员</span>
+                    <span class="manager-name">terrainnull</span>
+                    <button class="manage-btn" id="contactTerrainBtn">🌐 联系管理员</button>
+                </div>
+            </div>
+            <p style="margin-top: 8px;">管理组负责审批白名单、处理违规及服务器维护，日常大部分时间在线。</p>
+        </div>
+        <div class="cards-grid">
+            <div class="info-card">
+                <h3>📚 扩展链接</h3>
+                <ul class="gameplay-list">
+                    <li>服务器地图存档 (仅备份)</li>
+                    <li>AlphaVer 资料库</li>
+                    <li>社区建议收集</li>
+                </ul>
+                <button class="manage-btn" id="infoArchiveBtn" style="margin-top: 8px;">📁 社区公告板</button>
+                <div id="archiveArea" class="feedback-area"></div>
+            </div>
+            <div class="info-card">
+                <h3>📢 官方外联</h3>
+                <p>管理员 terrainnull 的交流方式点击上方按钮获取。</p>
+            </div>
+        </div>
+    </div>
+
+    <div style="text-align: center;">
+        <button class="back-to-top" id="scrollTopBtn2">⬆ 回到顶部</button>
+    </div>
+    <footer>NewzLand · 新版本体验 · 无付费内容 · 长期运行<br>26.2 超新机制 | 白名单+准入IP制 | 自由建筑与探索</footer>
+</div>
+
+<script>
+    function showFeedback(containerId, htmlContent) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        container.innerHTML = '';
+        const feedbackDiv = document.createElement('div');
+        feedbackDiv.className = 'feedback-card';
+        feedbackDiv.innerHTML = htmlContent;
+        const closeBtn = document.createElement('button');
+        closeBtn.textContent = '↺ 收起';
+        closeBtn.className = 'close-feedback-btn';
+        closeBtn.style.marginTop = '8px';
+        closeBtn.addEventListener('click', () => {
+            container.innerHTML = '';
+        });
+        feedbackDiv.appendChild(closeBtn);
+        container.appendChild(feedbackDiv);
+        feedbackDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // 锚点 + 顶部平滑
+    const navs = document.querySelectorAll('.nav-link');
+    navs.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const sectionId = btn.getAttribute('data-section');
+            const target = document.getElementById(sectionId);
+            if(target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    });
+    const backBtns = document.querySelectorAll('#backToTopBtn, #scrollTopBtn2');
+    backBtns.forEach(btn => {
+        btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    });
+
+    const biliAdminUrl = "https://space.bilibili.com/1198534645?spm_id_from=333.40164.0.0";
+
+    document.getElementById('requestIpBtn').addEventListener('click', () => {
+        showFeedback('ipFeedbackArea', `🔗 通过管理员渠道获取 IP：<a href="${biliAdminUrl}" target="_blank" style="color:#9effdf;">terrainnull 的 BiliBili</a><br> 发送 “OblerAlpha 白名单申请” 获取 IP 及准入说明。`);
+    });
+
+    document.getElementById('clientGuideBtn').addEventListener('click', () => {
+        showFeedback('clientGuideArea', '📋 26.2 正式版 客户端建议：<br>- PCL2 / HMCL 安装 <br>- 勾选“允许旧版LWJGL”<br>- 关闭“自动更新”<br>- 纯净版最稳定。');
+    });
+
+    document.getElementById('contactOblerBtn').addEventListener('click', () => {
+        showFeedback('ipFeedbackArea', '🎩 联系腐竹 XYZC_ab：请通过游戏内邮件 或 管理员 terrainnull 转达。');
+    });
+
+    document.getElementById('contactTerrainBtn').addEventListener('click', () => {
+        window.open(biliAdminUrl, '_blank');
+    });
+
+    document.getElementById('infoArchiveBtn').addEventListener('click', () => {
+        showFeedback('archiveArea', '📡 社区资源正在完善，服务器规则与建筑指引即将发布。可游戏内反馈给 XYZC_ab / terrainnull。');
+    });
+</script>
+</body>
+</html>
